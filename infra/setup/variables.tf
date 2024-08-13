@@ -1,4 +1,4 @@
-variable "st_state_bucket" {
+variable "tf_state_bucket" {
   description = "Name of s3 bucket in AWS for storing TF state"
   default     = "devops-tf-state-f2d-project"
 }
