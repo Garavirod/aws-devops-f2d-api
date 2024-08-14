@@ -1,6 +1,6 @@
  name: Test and Lint
 
- on: 
+on: 
   workflow_call:
     secrets:
       DOCKERHUB_USER:
