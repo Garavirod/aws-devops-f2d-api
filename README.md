@@ -98,7 +98,7 @@ To run any Terraform command through Docker, use the syntax below:
 docker compose run --rm terraform -chdir=TF_DIR COMMAND
 ```
 
-Where `TF_DIR` is the directory containing the Terraform (`setup` or `deploy`) and `COMMAND` is the Terraform command (e.g. `plan, validate fmt, apply, destroy`).
+Where `TF_DIR` is the directory containing the Terraform (`setup` or `deploy`) and `COMMAND` is the Terraform command (e.g. `plan, validate fmt, apply, destroy`). --rm is for remove container once command had done.
 
 #### Get outputs from the setup Terraform
 
