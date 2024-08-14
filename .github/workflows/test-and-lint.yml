@@ -40,9 +40,9 @@ jobs:
       - name: Terraform lint
         run: |
             cd infra/
-            docker compose run --rm -chdir=deploy init -backend=false
-            docker compose run --rm -chdir=setup init -backend=false
-            docker compose run --rm -chdir=setup validate
-            docker compose run --rm -chdir=setup fmt -chek  
-            docker compose run --rm -chdir=deploy validate
-            docker compose run --rm -chdir=deploy fmt -chek  
+            docker compose run --rm -chdir=deploy/ init -backend=false
+            docker compose run --rm -chdir=setup/ init -backend=false
+            docker compose run --rm -chdir=setup/ validate
+            docker compose run --rm -chdir=setup/ fmt -chek  
+            docker compose run --rm -chdir=deploy/ validate
+            docker compose run --rm -chdir=deploy/ fmt -chek  
