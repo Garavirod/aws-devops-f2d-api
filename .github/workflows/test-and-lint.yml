@@ -43,6 +43,6 @@ jobs:
             docker compose run terraform --rm -chdir=deploy/ init -backend=false
             docker compose run terraform --rm -chdir=setup/ init -backend=false
             docker compose run terraform --rm -chdir=setup/ validate
-            docker compose run terraform --rm -chdir=setup/ fmt -chek  
+            docker compose run terraform --rm -chdir=setup/ fmt -check  
             docker compose run terraform --rm -chdir=deploy/ validate
-            docker compose run terraform --rm -chdir=deploy/ fmt -chek  
+            docker compose run terraform --rm -chdir=deploy/ fmt -check  
