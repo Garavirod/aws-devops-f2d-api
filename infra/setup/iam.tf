@@ -80,7 +80,7 @@ resource "aws_iam_user_policy_attachment" "tf_backend" {
 data "aws_iam_policy_document" "ecr" {
   statement {
     effect    = "Allow"
-    actions   = ["ecr:GetAthorizationToken"]
+    actions   = ["ecr:GetAuthorizationToken"]
     resources = ["*"]
   }
 
