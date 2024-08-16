@@ -59,7 +59,7 @@ resource "aws_subnet" "public_b" {
   map_public_ip_on_launch = true
   availability_zone       = "${data.aws_region.current.name}b"
   tags = {
-    Name = "${local.prefix}-public-b" // a for az (a or b)
+    Name = "${local.prefix}-public-b" // b for az (a or b)
   }
 }
 
@@ -80,3 +80,36 @@ resource "aws_route" "public_internet_access_b" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.main.id
 }
+
+/* 
+  Summary:
+ 1. The VPC serves as the foundational network layer.
+ 2. The Internet Gateway connects the VPC to the internet.
+ 3. Public Subnets are created within the VPC, each associated with a specific AZ, and are configured to provide public IPs to instances.
+ 4. Route Tables are associated with each subnet, directing internet-bound traffic through the Internet Gateway.
+*/
+
+############################################
+# Private subnets for internal access only #
+############################################
+
+resource "aws_subnet" "private_a" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.1.10.0/24"
+  availability_zone = "${data.aws_region.current.name}a"
+
+  tags = {
+    Name = "${local.prefix}-private-a"
+  }
+}
+
+resource "aws_subnet" "private_b" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.1.11.0/24"
+  availability_zone = "${data.aws_region.current.name}b"
+
+  tags = {
+    Name = "${local.prefix}-private-b"
+  }
+}
+
