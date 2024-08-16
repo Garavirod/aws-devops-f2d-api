@@ -1,4 +1,4 @@
-output "cd_user_access_key_cd" {
+/* output "cd_user_access_key_cd" {
   description = "Aws Key id for CD User"
   value       = aws_iam_access_key.cd.id
 }
@@ -15,4 +15,4 @@ output "ecr_repo_app" {
 output "ecr_repo_proxy" {
   description = "ECR repository URL for proxy image"
   value       = aws_ecr_repository.proxy.repository_url
-}
+} */

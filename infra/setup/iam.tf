@@ -2,20 +2,20 @@
 # Create IAM user and policies for CD #
 #######################################
 
-resource "aws_iam_user" "cd" {
+/* resource "aws_iam_user" "cd" {
   name = "f2d-app-api-cd"
 }
 
 resource "aws_iam_access_key" "cd" {
   user = aws_iam_user.cd.name
 }
-
+ */
 
 ########################################################
 # Policy for terraform backend to s3 and Dynamo access #
 ########################################################
 
-data "aws_iam_policy_document" "tf_backend" {
+/* data "aws_iam_policy_document" "tf_backend" {
   statement {
     effect    = "Allow"
     actions   = ["s3:ListBucket"]
@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "tf_backend" {
     resources = ["arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"]
   }
 }
-
+ */
 ###################################
 # Diff between data and resources #
 ###################################
@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "tf_backend" {
   different Terraform configuration.
 */
 
-resource "aws_iam_policy" "tf_backend" {
+/* resource "aws_iam_policy" "tf_backend" {
   name        = "${aws_iam_user.cd.name}-tf-s3-dynamodb"
   description = "Allow user to use S3 and DynamoDB for TF backend resources"
   policy      = data.aws_iam_policy_document.tf_backend.json
@@ -71,13 +71,13 @@ resource "aws_iam_user_policy_attachment" "tf_backend" {
   user       = aws_iam_user.cd.name
   policy_arn = aws_iam_policy.tf_backend.arn
 }
-
+ */
 
 #########################
 # Policy for ECR access #
 #########################
 
-data "aws_iam_policy_document" "ecr" {
+/* data "aws_iam_policy_document" "ecr" {
   statement {
     effect    = "Allow"
     actions   = ["ecr:GetAuthorizationToken"]
@@ -114,6 +114,7 @@ resource "aws_iam_user_policy_attachment" "ecr" {
 #########################
 # Policy for EC2 access #
 #########################
+
 data "aws_iam_policy_document" "ec2" {
   statement {
     effect = "Allow"
@@ -170,3 +171,4 @@ resource "aws_iam_user_policy_attachment" "ec2" {
   policy_arn = aws_iam_policy.ec2.arn
 }
 
+ */
