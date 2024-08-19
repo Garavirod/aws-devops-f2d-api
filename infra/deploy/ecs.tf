@@ -26,7 +26,7 @@ resource "aws_iam_role_policy_attachment" "task_execution_role" {
   policy_arn = aws_iam_policy.task_execution_role_policy.arn
 }
 
-// Task definition role
+// Task role
 resource "aws_iam_role" "app_task" {
   name               = "${local.prefix}-app-task"
   assume_role_policy = file("./templates/ecs/task-assume-role-policy.json")
@@ -52,6 +52,19 @@ resource "aws_iam_role_policy_attachment" "task_ssm_policy" {
   role       = aws_iam_role.app_task.name
   policy_arn = aws_iam_policy.task_ssm_policy.arn
 }
+
+
+// Cloudwatch log group definition
+/* 
+Allows to view all the logs for task that is runing
+Allows to track changes
+Allows to know who is makeing requests to the app
+Allows to view execption messages or error for debbuging
+*/
+resource "aws_cloudwatch_log_group" "ecs_task_logs" {
+  name = "${local.prefix}-api"
+}
+
 // Cluster definition
 resource "aws_ecs_cluster" "main" {
   name = "${local.prefix}-cluster"
