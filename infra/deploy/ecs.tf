@@ -69,3 +69,26 @@ resource "aws_cloudwatch_log_group" "ecs_task_logs" {
 resource "aws_ecs_cluster" "main" {
   name = "${local.prefix}-cluster"
 }
+
+// Task Definition
+
+resource "aws_ecs_task_definition" "api" {
+  family                   = "${local.prefix}-api" // Every task lacunh creates a new version that belog to the task family (task name)
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  execution_role_arn       = aws_iam_role.task_execution_role.arn
+  task_role_arn            = aws_iam_role.app_task.arn
+  container_definitions    = jsonencode([])
+
+  volume {
+    // In django is useful for sharing or serving static data between proxy and app
+    name = "static" // Location on the running server that has files; Allow share data between running containers
+  }
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64" //important to keep in mind, because this is base on the architecture the docker images are build for.
+  }
+}
