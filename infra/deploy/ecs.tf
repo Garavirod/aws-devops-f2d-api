@@ -80,7 +80,42 @@ resource "aws_ecs_task_definition" "api" {
   memory                   = 512
   execution_role_arn       = aws_iam_role.task_execution_role.arn
   task_role_arn            = aws_iam_role.app_task.arn
-  container_definitions    = jsonencode([])
+  container_definitions = jsonencode([
+    {
+      name              = "proxy"
+      image             = var.ecr_proxy_image
+      essential         = true    // if something happens to container it will try and restart the task
+      memoryReservation = 256     // must not exceed of task definition memory
+      user              = "ngnix" // reverse proxy user to access necessary permissions whathever to do into container
+      portMappings = [
+        {
+          containerPort = 8000 // hook with the ALB
+          hostPort      = 8000
+        }
+      ]
+      environment = [
+        {
+          name  = "APP_HOST"
+          value = "127.0.0.1"
+        }
+      ]
+      mountPoints = [ // volumes
+        {
+          readOnly      = true
+          containerPath = "/vol/static"
+          sourceVolume  = "static"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_task_logs.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "proxy"
+        }
+      }
+    }
+  ])
 
   volume {
     // In django is useful for sharing or serving static data between proxy and app
