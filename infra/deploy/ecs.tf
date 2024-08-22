@@ -134,7 +134,7 @@ resource "aws_ecs_task_definition" "api" {
       image             = var.ecr_proxy_image
       essential         = true    // if something happens to container it will try and restart the task
       memoryReservation = 256     // must not exceed of task definition memory
-      user              = "ngnix" // reverse proxy user to access necessary permissions whathever to do into container
+      user              = "nginx" // reverse proxy user to access necessary permissions whathever to do into container
       portMappings = [
         {
           containerPort = 8000 // hook with the ALB and SG
