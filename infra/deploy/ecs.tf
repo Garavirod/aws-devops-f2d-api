@@ -82,6 +82,54 @@ resource "aws_ecs_task_definition" "api" {
   task_role_arn            = aws_iam_role.app_task.arn
   container_definitions = jsonencode([
     {
+      name              = "api"
+      image             = var.ecr_app_image
+      essential         = true
+      memoryReservation = 256
+      user              = "django-user"
+      environment = [
+        {
+          name  = "DJANGO_SECRET_KEY"
+          value = var.django_secret_key
+        },
+        {
+          name  = "DB_HOST"
+          value = aws_db_instance.main.address
+        },
+        {
+          name  = "DB_NAME"
+          value = aws_db_instance.main.db_name
+        },
+        {
+          name  = "DB_USER"
+          value = aws_db_instance.main.username
+        },
+        {
+          name  = "DB_PASS"
+          value = aws_db_instance.main.password
+        },
+        {
+          name  = "ALLOWED_HOSTS"
+          value = "*" // CORS
+        }
+      ]
+      mountPoints = [
+        {
+          readOnly      = false // 'cause the app needs to wwrite data into this location
+          containerPath = "/vol/web/static"
+          sourceVolume  = "static"
+        }
+      ],
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_task_logs.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "api"
+        }
+      }
+    },
+    {
       name              = "proxy"
       image             = var.ecr_proxy_image
       essential         = true    // if something happens to container it will try and restart the task
