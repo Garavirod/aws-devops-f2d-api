@@ -137,7 +137,7 @@ resource "aws_ecs_task_definition" "api" {
       user              = "ngnix" // reverse proxy user to access necessary permissions whathever to do into container
       portMappings = [
         {
-          containerPort = 8000 // hook with the ALB
+          containerPort = 8000 // hook with the ALB and SG
           hostPort      = 8000
         }
       ]
@@ -173,5 +173,41 @@ resource "aws_ecs_task_definition" "api" {
   runtime_platform {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64" //important to keep in mind, because this is base on the architecture the docker images are build for.
+  }
+}
+
+/* 
+  SG for managing the rules for the srvice which run the tasks
+ */
+resource "aws_security_group" "ecs_service" {
+  description = "Access rules for the ECS service."
+  name        = "${local.prefix}-ecs-service"
+  vpc_id      = aws_vpc.main.id
+
+  # Outbound access to endpoints
+  egress { // This allow to access the endpoints in private subnet which are in port 443
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # RDS connectivity
+  egress {
+    from_port = 5432
+    to_port   = 5432
+    protocol  = "tcp"
+    cidr_blocks = [
+      aws_subnet.private_a.cidr_block,
+      aws_subnet.private_b.cidr_block,
+    ]
+  }
+
+  # HTTP inbound access
+  ingress {
+    from_port   = 8000 // same as proxy becasue it manage the requests; proxy -> app
+    to_port     = 8000 // same as proxy
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
