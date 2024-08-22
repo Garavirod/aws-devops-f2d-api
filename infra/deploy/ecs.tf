@@ -211,3 +211,24 @@ resource "aws_security_group" "ecs_service" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+resource "aws_ecs_service" "api" {
+  name                   = "${local.prefix}-api"
+  cluster                = aws_ecs_cluster.main.name
+  task_definition        = aws_ecs_task_definition.api.family
+  desired_count          = 1 // Ability to process more request and to scale up the app, as many as the app needs to handle 
+  launch_type            = "FARGATE"
+  platform_version       = "1.4.0" // Fargate version
+  enable_execute_command = true
+
+  network_configuration {
+    assign_public_ip = true
+
+    subnets = [
+      aws_subnet.public_a.id, // private for real appp and public for testing 
+      aws_subnet.public_b.id
+    ]
+
+    security_groups = [aws_security_group.ecs_service.id]
+  }
+}
