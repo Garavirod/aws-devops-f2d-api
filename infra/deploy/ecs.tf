@@ -203,6 +203,21 @@ resource "aws_security_group" "ecs_service" {
     ]
   }
 
+  # NFS Port for EFS volumes ECS access to
+  egress {
+    from_port = 2049 // standard port for netwrok file ssystem that EFS uses
+    to_port   = 2049
+    protocol  = "tcp"
+    /* 
+     This is a list of CIDR blocks (IP address ranges) that are allowed as destinations for the egress traffic. 
+     In this case, the code specifies that traffic can be sent to the private subnets (private_a and private_b)
+     */
+    cidr_blocks = [
+      aws_subnet.private_a.cidr_block,
+      aws_subnet.private_b.cidr_block,
+    ]
+  }
+
   # HTTP inbound access
   ingress {
     from_port   = 8000 // same as proxy becasue it manage the requests; proxy -> app
