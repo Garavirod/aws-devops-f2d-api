@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+from socket import gethostname, gethostbyname
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,6 +34,28 @@ ALLOWED_HOSTS.extend(
         os.environ.get('ALLOWED_HOSTS', '').split(','),
     )
 )
+""" 
+    AWS_EXECUTION_ENV -> verify in doc this env variable. This is useful to validate 
+    if app is running in AWS environments. this env is created automatically.
+
+    if app is running ins AWS env, just get the host name and its ip address and
+    add it into ALLOWED_HOST.
+
+    Useful when the ALB health check needs to verify the task is running, but also needs to verify the host is accessible
+    So it is important to tell django that the ip where task is running on (task ip) needs to verify
+
+    it makes a http get request to the URL that we specify, which in our case is forward /api/health-check/ 
+    The reason it does this is to check the health and to ensure that the application is running.
+    However, an important detail to pay attention to is that the health check request will come from the
+    load balancer and will be made to the IP address that is given to the task.
+
+    In brief: health check comes from alb and is made using the task ip, but this task ip
+    is not allowed to access the app because is not into ALLOWED_HOST. So that is why this IP
+    needs to be added to that health check get pass.
+"""
+if os.environ.get('AWS_EXECUTION_ENV'):
+    # gethostname : ip address; dns name: gethostbyname
+    ALLOWED_HOSTS.append(gethostbyname(gethostname()))
 
 # Application definition
 

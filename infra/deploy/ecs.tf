@@ -208,7 +208,10 @@ resource "aws_security_group" "ecs_service" {
     from_port   = 8000 // same as proxy becasue it manage the requests; proxy -> app
     to_port     = 8000 // same as proxy
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] // public access
+    security_groups = [
+      aws_security_group.lb.id // Only accesible for ecs sg
+    ]
   }
 }
 
@@ -225,10 +228,18 @@ resource "aws_ecs_service" "api" {
     assign_public_ip = true
 
     subnets = [
-      aws_subnet.public_a.id, // private for real appp and public for testing 
-      aws_subnet.public_b.id
+      # aws_subnet.public_a.id, // private for real appp and public for testing 
+      # aws_subnet.public_b.id
+      aws_subnet.private_a.id, // resgister the servies in private subnets,, this way ecs task is protected.
+      aws_subnet.private_b.id
     ]
 
     security_groups = [aws_security_group.ecs_service.id]
+  }
+  // load balcner will forward requests to a target group and tg will forward to proxy container runnning on 8000
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api.arn
+    container_name   = "proxy"
+    container_port   = 8000
   }
 }
