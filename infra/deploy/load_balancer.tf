@@ -56,3 +56,17 @@ resource "aws_lb_target_group" "api" {
     path = "/api/health-check/"
   }
 }
+
+/* 
+When you receive a request on port 80   forward it to tg (group resources)
+ */
+resource "aws_lb_listener" "api" {
+  load_balancer_arn = aws_lb.api.arn // incoming requests (listeners) outcomming target group
+  port              = 80
+  protocol          = "HTTP" // use https when you have a certificate
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
+  }
+}
