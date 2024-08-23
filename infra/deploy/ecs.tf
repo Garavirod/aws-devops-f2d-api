@@ -208,7 +208,10 @@ resource "aws_security_group" "ecs_service" {
     from_port   = 8000 // same as proxy becasue it manage the requests; proxy -> app
     to_port     = 8000 // same as proxy
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] // public access
+    security_groups = [
+      aws_security_group.lb.id // Only accesible for ecs sg
+    ]
   }
 }
 
