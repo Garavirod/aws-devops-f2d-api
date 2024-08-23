@@ -28,3 +28,15 @@ resource "aws_security_group" "lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+/* 
+  GLB: Security
+  NLB: layer 4 tcp level load balancer that acepts request and froward at the network, doeatnt have contaxt thatt the app is forward for
+  ALB: Layer 7, http request and can have context about http requests, forward http to https
+ */
+resource "aws_lb" "api" {
+  name               = "${local.prefix}-lb"
+  load_balancer_type = "application" // for ALB
+  subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]
+  security_groups    = [aws_security_group.lb.id]
+}
