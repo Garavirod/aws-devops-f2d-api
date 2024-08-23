@@ -40,3 +40,19 @@ resource "aws_lb" "api" {
   subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]
   security_groups    = [aws_security_group.lb.id]
 }
+
+/* Distribute request from alb to various resources through target group
+  this way, scalling is mange cause you can distribute load to one to thousndas resources.
+ */
+
+resource "aws_lb_target_group" "api" {
+  name        = "${local.prefix}-api"
+  protocol    = "HTTP" // receives https and forwards to http in private network (does not matter 'cause app cannot be accesible via public internet)
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip" // forward request to the internal ip address of the runing tasks.
+  port        = 8000 // port where application is running on
+
+  health_check {
+    path = "/api/health-check/"
+  }
+}
