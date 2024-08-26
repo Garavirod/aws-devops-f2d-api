@@ -5,10 +5,13 @@ on:
         inputs:
             environment:
                 type: choice
+                required: true
                 description: Which env to deploy AWS resources for?
                 options: 
                     - dev (staging)
                     - prod
+
+run-name: Deploy changes into env -> ${{ github.event.inputs.environment }} by ${{ github.triggering_actor }}
 
 jobs:
     test-lnit:
