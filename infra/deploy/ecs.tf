@@ -118,6 +118,11 @@ resource "aws_ecs_task_definition" "api" {
           readOnly      = false // 'cause the app needs to wwrite data into this location
           containerPath = "/vol/web/static"
           sourceVolume  = "static"
+        },
+        {
+          readOnly      = false
+          containerPath = "/vol/web/media"
+          sourceVolume  = "efs-media"
         }
       ],
       logConfiguration = {
@@ -152,7 +157,12 @@ resource "aws_ecs_task_definition" "api" {
           readOnly      = true
           containerPath = "/vol/static"
           sourceVolume  = "static"
-        }
+        },
+        {
+          readOnly      = true
+          containerPath = "/vol/media"
+          sourceVolume  = "efs-media"
+        },
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -165,9 +175,28 @@ resource "aws_ecs_task_definition" "api" {
     }
   ])
 
+  // Volumes dedfinitions 
   volume {
     // In django is useful for sharing or serving static data between proxy and app
     name = "static" // Location on the running server that has files; Allow share data between running containers
+  }
+
+  /* 
+    Block below, specifies that the volume is backed by an Amazon EFS file system.
+    So essentially that means that the data will persist between each task.
+    And it will also be shared by each task.
+    So every task that runs will be using the media files from the same location in EFS.
+   */
+  volume {
+    name = "efs-media"
+    efs_volume_configuration {
+      file_system_id     = aws_efs_file_system.media.id
+      transit_encryption = "ENABLED"
+      authorization_config {
+        access_point_id = aws_efs_access_point.media.id
+        iam             = "DISABLED"
+      }
+    }
   }
 
   runtime_platform {
