@@ -11,7 +11,7 @@ on:
                     - dev (staging)
                     - prod
 
-run-name: Deploy changes into env -> ${{ github.event.inputs.environment }} by ${{ github.triggering_actor }}
+run-name: Deploy changes into ${{ github.event.inputs.environment }} by ${{ github.triggering_actor }}
 
 jobs:
     test-lnit:

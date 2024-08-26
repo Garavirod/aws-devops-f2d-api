@@ -10,6 +10,8 @@ on:
                     - staging
                     - prod
 
+run-name: Destroy resources for ${{ github.event.inputs.environment }} by ${{ github.triggering_actor }}
+
 jobs:
     destroy:
         name: Destroy resources
