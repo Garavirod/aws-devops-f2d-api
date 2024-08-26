@@ -1,10 +1,14 @@
 name: Deploy
 
 on:
-    push:
-        branches:
-            - main
-            - prod
+    workflow_dispatch:
+        inputs:
+            environment:
+                type: choice
+                description: Which env to deploy AWS resources for?
+                options: 
+                    - main
+                    - prod
 
 jobs:
     test-lnit:
