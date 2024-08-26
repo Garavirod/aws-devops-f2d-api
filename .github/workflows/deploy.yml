@@ -7,7 +7,7 @@ on:
                 type: choice
                 description: Which env to deploy AWS resources for?
                 options: 
-                    - main
+                    - dev (staging)
                     - prod
 
 jobs:
