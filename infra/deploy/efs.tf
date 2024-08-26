@@ -50,3 +50,41 @@ resource "aws_efs_mount_target" "media_b" {
   subnet_id       = aws_subnet.private_b.id
   security_groups = [aws_security_group.efs.id]
 }
+
+
+/* 
+  Access point
+
+  An EFS Access Point is a managed entry point to an Amazon Elastic File System (EFS) file system. 
+  It simplifies the process of providing applications with a specific entry point into an EFS file system, 
+  with defined access permissions, user identity, and directory structure.
+
+  So an access point is a way that you can split up the locations inside your EFS file system and give
+  different access to different things.
+
+  If you had a setup where you had multiple different apps and you wanted to share the same EFS file system,
+  but you wanted to split up the file system so that the data is separated into separate locations and
+  only certain components of your application or certain tasks can access certain parts of the file system.
+
+  Uses cases: 
+
+  - Multi-tenant Environments: In scenarios where multiple applications or users need isolated access to 
+  specific directories within the same EFS file system, Access Points provide a way to enforce directory isolation and user permissions.
+
+  - Scoped Access: By defining a specific root directory for the Access Point, you can ensure that applications are restricted to a specific 
+  portion of the file system, enhancing security and reducing the risk of accidental access to unintended directories.
+
+  - Containerized Workloads: When using EFS with containers (e.g., in Amazon ECS or Kubernetes), Access Points allow each container to 
+    access a specific directory within the EFS file system, with its own user identity and permissions, simplifying access control in complex environments.
+ */
+resource "aws_efs_access_point" "media" {
+  file_system_id = aws_efs_file_system.media.id
+  root_directory {
+    path = "/api/media"
+    creation_info {
+      owner_gid   = 101 // Permission of who can access to in terms of Linux ID (specified in Dockerfile ARG=UID 101)
+      owner_uid   = 101
+      permissions = "755" // chmod calculator
+    }
+  }
+}
