@@ -65,6 +65,27 @@ resource "aws_lb_listener" "api" {
   port              = 80
   protocol          = "HTTP" // use https when you have a certificate
 
+  /* default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
+  } */
+
+  /* Everyone that reaches the domain via HTTP on Port 80 instead 443, default action would be redirect trafic to https*/
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_lb_listener" "api_https" {
+  load_balancer_arn = aws_lb.api.arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate_validation.cert.certificate_arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.api.arn

@@ -44,7 +44,7 @@ variable "subdomain" {
   type        = map(string)
 
   default = {
-    prod    = "api" # api.example.com
+    prod    = "api"         # api.example.com
     staging = "api.staging" # api.staging.example.com
     dev     = "api.dev"
   }
